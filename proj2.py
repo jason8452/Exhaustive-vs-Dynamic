@@ -1,87 +1,153 @@
-# exhaustive vs dynamic programming
-from itertools import combinations
-
-# exhaustive programming
 def exhaustive_best(limit, stock_values):
-    # best combo and their values of the best combos
-    best_stock_combo = None
-    best_value = 0
+    # sorting the values of each stock in order of value
+    stock_values.sort(key=lambda x: x[1], reverse=True)
+    selected_stocks = []  # stores the select stocks (for later when outputting)
+    total_value = 0  # stores the values of the selected stocks (also for outputting)
+    # goes through all the stocks and checks for if they're in the limit and not outside the boundaries
+    for stock in stock_values:
+        if stock[1] <= limit:
+            selected_stocks.append(stock)
+            limit -= stock[1]
+            total_value += stock[1]
+    return total_value, selected_stocks
 
-    # trying all the combos
-    for subset_size in range(1, len(stock_values) + 1):
-        for stock_combo in combinations(stock_values, subset_size):
-            # getting the total value of whichever the current combo is
-            current_value = sum(stock[1] for stock in stock_combo)
-
-            # sees if the combo is valid and if the value is higher
-            if current_value <= limit and current_value > best_value:
-                best_stock_combo = stock_combo
-                best_value = current_value
-
-    return best_value, best_stock_combo
-
-# dynamic programming
 def dynamic_best(limit, stock_values):
-    # table for results
-    dp_table = [[0] * (limit + 1) for _ in range(len(stock_values) + 1)]
-
-    # dp for the table
-    for stock_index in range(1, len(stock_values) + 1):
+    #  to store results
+    dp = [[0] * (limit + 1) for _ in range(len(stock_values) + 1)]
+    # dynamic programming to find max value
+    for index in range(1, len(stock_values) + 1):
         for current_limit in range(limit + 1):
-            # checks current stock be put in
-            if stock_values[stock_index-1][1] <= current_limit:
-                # checks to see whether or not it goes in or not
-                dp_table[stock_index][current_limit] = max(
-                    dp_table[stock_index-1][current_limit],
-                    dp_table[stock_index-1][current_limit-stock_values[stock_index-1][1]] + stock_values[stock_index-1][1]
+            if stock_values[index - 1][1] <= current_limit:
+                dp[index][current_limit] = max(
+                    dp[index - 1][current_limit],
+                    dp[index - 1][current_limit - stock_values[index - 1][1]] + stock_values[index - 1][1]
                 )
             else:
-                # if too high price, skip over it
-                dp_table[stock_index][current_limit] = dp_table[stock_index-1][current_limit]
+                dp[index][current_limit] = dp[index - 1][current_limit]
+    selected_stocks = []  # stores the stocks that are chosen
+    remaining_limit = limit  # checks what the remaining limit is
+    # finding selected stocks
+    for index in range(len(stock_values), 0, -1):
+        if dp[index][remaining_limit] != dp[index - 1][remaining_limit]:
+            selected_stocks.append(stock_values[index - 1])
+            remaining_limit -= stock_values[index - 1][1]
+    return dp[len(stock_values)][limit], selected_stocks  # returns max val and stocks that were selected (to go to the output of course)
 
-    # selected stocks
-    selected_stocks = []
-    remaining_limit = limit
-    for stock_index in range(len(stock_values), 0, -1):
-        if dp_table[stock_index][remaining_limit] != dp_table[stock_index-1][remaining_limit]:
-            # current stock goes in the results
-            selected_stocks.append(stock_values[stock_index-1])
-            remaining_limit -= stock_values[stock_index-1][1]
-
-    return dp_table[len(stock_values)][limit], selected_stocks
-
-# gets the 10 sample inputs from the input.txt file
-def read_input(file):
-    with open(file, 'r') as f:
-        lines = f.readlines()
-
-    N = int(lines[0].split('=')[1].strip())
-    stock_values = [list(map(int, line.split(','))) for line in lines[1:N+1]]
-    amount = int(lines[N+1].split('=')[1].strip())
-
-    return N, stock_values, amount
-
-# puts the output of it into the output.txt file
 def write_output(file, result):
-    with open(file, 'w') as f:
-        f.write(f"Maximum Value: {result[0]}\n")
-        f.write(f"Selected Stocks: {result[1]}\n")
+    # Append the output to a file
+    with open(file, 'append') as f:
+        f.write(f"Max stock: {result[0]} ") # shows the max stock
+        f.write(f"Stocks selected: {result[1]}\n\n") # shows the slected stocks
 
-# main
 def main():
-    input_file = 'input.txt'
-    output_file = 'output.txt'
+    # method did not work trying to pull the sample inputs from input.txt so I did it through the directory
+    output_file = r'C:\Users\jayle\Exhaustive-vs-Dynamic\output.txt'
+    # Sample Input 1
+    N = 4
+    Stocks_and_values = [[1, 2], [4, 3], [5, 6], [6, 7]]
+    Amount = 12
+    # running exhaustive
+    part_A = exhaustive_best(Amount, Stocks_and_values)
+    write_output(output_file, part_A)
+    # running dynamic
+    part_B = dynamic_best(Amount, Stocks_and_values)
+    write_output(output_file, part_B)
 
-    # reads the input.txt
-    N, stock_values, amount = read_input(input_file)
+    # Sample Input 2
+    N = 4
+    Stocks_and_values = [[3, 2], [4, 3], [5, 3], [6, 7]]
+    Amount = 10
+    # running exhaustive
+    part_A = exhaustive_best(Amount, Stocks_and_values)
+    write_output(output_file, part_A)
+    # running dynamic
+    part_B = dynamic_best(Amount, Stocks_and_values)
+    write_output(output_file, part_B)
 
-    # exhaustive
-    result_A = exhaustive_best(amount, stock_values)
-    write_output(output_file, result_A)
+    # Sample Input 3
+    N = 3
+    Stocks_and_values = [[2, 4], [3, 5], [1, 2]]
+    Amount = 8
+    # running exhaustive
+    part_A = exhaustive_best(Amount, Stocks_and_values)
+    write_output(output_file, part_A)
+    # running dynamic
+    part_B = dynamic_best(Amount, Stocks_and_values)
+    write_output(output_file, part_B)
 
-    # dynamic
-    result_B = dynamic_best(amount, stock_values)
-    write_output(output_file, result_B)
+    # Sample Input 4
+    N = 5
+    Stocks_and_values = [[2, 3], [4, 6], [1, 2], [3, 5], [5, 7]]
+    Amount = 15
+    # running exhaustive
+    part_A = exhaustive_best(Amount, Stocks_and_values)
+    write_output(output_file, part_A)
+    # running dynamic
+    part_B = dynamic_best(Amount, Stocks_and_values)
+    write_output(output_file, part_B)
 
-if __name__ == "__main__":
-    main()
+    # Sample Input 5
+    N = 2
+    Stocks_and_values = [[1, 2], [1, 1]]
+    Amount = 3
+    # running exhaustive
+    part_A = exhaustive_best(Amount, Stocks_and_values)
+    write_output(output_file, part_A)
+    # running dynamic
+    part_B = dynamic_best(Amount, Stocks_and_values)
+    write_output(output_file, part_B)
+
+    # Sample Input 6
+    N = 3
+    Stocks_and_values = [[5, 8], [2, 3], [3, 4]]
+    Amount = 10
+    # running exhaustive
+    part_A = exhaustive_best(Amount, Stocks_and_values)
+    write_output(output_file, part_A)
+    # running dynamic
+    part_B = dynamic_best(Amount, Stocks_and_values)
+    write_output(output_file, part_B)
+
+    # Sample Input 7
+    N = 4
+    Stocks_and_values = [[1, 1], [2, 2], [3, 3], [4, 4]]
+    Amount = 8
+    # running exhaustive
+    part_A = exhaustive_best(Amount, Stocks_and_values)
+    write_output(output_file, part_A)
+    # running dynamic
+    part_B = dynamic_best(Amount, Stocks_and_values)
+    write_output(output_file, part_B)
+
+    # Sample Input 8
+    N = 5
+    Stocks_and_values = [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6]]
+    Amount = 15
+    # running exhaustive
+    part_A = exhaustive_best(Amount, Stocks_and_values)
+    write_output(output_file, part_A)
+    # running dynamic
+    part_B = dynamic_best(Amount, Stocks_and_values)
+    write_output(output_file, part_B)
+
+    # Sample Input 9
+    N = 3
+    Stocks_and_values = [[3, 5], [1, 2], [2, 3]]
+    Amount = 7
+    # running exhaustive
+    part_A = exhaustive_best(Amount, Stocks_and_values)
+    write_output(output_file, part_A)
+    # running dynamic
+    part_B = dynamic_best(Amount, Stocks_and_values)
+    write_output(output_file, part_B)
+
+    # Sample Input 10
+    N = 2
+    Stocks_and_values = [[4, 7], [2, 3]]
+    Amount = 8
+    # running exhaustive
+    part_A = exhaustive_best(Amount, Stocks_and_values)
+    write_output(output_file, part_A)
+    # running dynamic
+    part_B = dynamic_best(Amount, Stocks_and_values)
+    write_output(output_file, part_B)
