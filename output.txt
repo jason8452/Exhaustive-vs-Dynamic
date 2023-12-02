@@ -1,1 +1,45 @@
+This is the format:
+Exhaustive
+Dynamic
+Every 2 are a pair. Exhaustive first, dynamic second.
+
+Max Stock: 12 Selected Stocks: [[6, 7], [4, 3], [1, 2]]
+
+Max Stock: 12 Selected Stocks: [[1, 2], [4, 3], [6, 7]]
+
+Max Stock: 10 Selected Stocks: [[6, 7], [4, 3]]
+
+Max Stock: 10 Selected Stocks: [[4, 3], [6, 7]]
+
+Max Stock: 7 Selected Stocks: [[3, 5], [1, 2]]
+
+Max Stock: 7 Selected Stocks: [[1, 2], [3, 5]]
+
+Max Stock: 15 Selected Stocks: [[5, 7], [4, 6], [1, 2]]
+
+Max Stock: 15 Selected Stocks: [[2, 3], [3, 5], [5, 7]]
+
+Max Stock: 3 Selected Stocks: [[1, 2], [1, 1]]
+
+Max Stock: 3 Selected Stocks: [[1, 1], [1, 2]]
+
+Max Stock: 8 Selected Stocks: [[5, 8]]
+
+Max Stock: 8 Selected Stocks: [[5, 8]]
+
+Max Stock: 8 Selected Stocks: [[4, 4], [3, 3], [1, 1]]
+
+Max Stock: 8 Selected Stocks: [[1, 1], [3, 3], [4, 4]]
+
+Max Stock: 15 Selected Stocks: [[5, 6], [4, 5], [3, 4]]
+
+Max Stock: 15 Selected Stocks: [[3, 4], [4, 5], [5, 6]]
+
+Max Stock: 7 Selected Stocks: [[3, 5], [1, 2]]
+
+Max Stock: 7 Selected Stocks: [[1, 2], [3, 5]]
+
+Max Stock: 7 Selected Stocks: [[4, 7]]
+
+Max Stock: 7 Selected Stocks: [[4, 7]]
 
